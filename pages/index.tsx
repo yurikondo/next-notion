@@ -1,11 +1,20 @@
+import { getAllPosts } from "@/lib/notionAPI";
 import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "next/font/google";
-import styles from "@/styles/Home.module.css";
 
-const inter = Inter({ subsets: ["latin"] });
+// SSG:ビルド時にあらかじめデータを取得しておく
+export const getStaticProps = async () => {
+  const allPosts= await getAllPosts();
+  return {
+    props: {
+      allPosts,
+    },
+    // ISR:60秒ごとにデータを更新する
+    revalidate: 60,
+  };
+};
 
-export default function Home() {
+export default function Home({ allPosts }) {
+  console.log(allPosts);
   return (
     <>
       <Head>
