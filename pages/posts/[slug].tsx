@@ -1,4 +1,27 @@
+import { getAllPosts, getSinglePost } from "@/lib/notionAPI";
 import React from "react";
+
+export const getStaticPaths = async () => {
+  const allPosts = await getAllPosts();
+  const paths = allPosts.map(({ slug }) => ({ params: { slug } }));
+
+  return {
+    paths,
+    fallback: "blocking",
+  };
+};
+
+// SSG:ビルド時にあらかじめデータを取得しておく
+export const getStaticProps = async ({ params }) => {
+  const post = await getSinglePost(params.slug);
+  return {
+    props: {
+      post,
+    },
+    // ISR:60秒ごとにデータを更新する
+    revalidate: 60,
+  };
+};
 
 const Post = () => {
   return (
