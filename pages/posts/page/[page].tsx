@@ -5,14 +5,16 @@ import Head from "next/head";
 
 export const getStaticPaths: GetStaticPaths = async () => {
   return {
-    paths: {
-      params: {
-        page: 1,
+    paths: [
+      {
+        params: {
+          page: "1",
+        },
+        params: {
+          page: "2",
+        },
       },
-      params: {
-        page: 2,
-      },
-    },
+    ],
     fallback: "blocking",
   };
 };
@@ -42,19 +44,22 @@ const BlogPageList = ({ fourPosts }) => {
         <h1 className="text-5xl font-medium text-center mb-16">
           NotionBlog 🚀
         </h1>
-        {fourPosts.map((post) => {
-          return (
-            <div className="mx-4">
-              <SinglePost
-                title={post.title}
-                description={post.description}
-                date={post.date}
-                tags={post.tags}
-                slug={post.slug}
-              />
-            </div>
-          );
-        })}
+        <section className="sm:grid grid-cols-2 w-5/6 gap-3 mx-auto">
+          {fourPosts.map((post) => {
+            return (
+              <div>
+                <SinglePost
+                  title={post.title}
+                  description={post.description}
+                  date={post.date}
+                  tags={post.tags}
+                  slug={post.slug}
+                  isPaginationPage={true}
+                />
+              </div>
+            );
+          })}
+        </section>
       </main>
     </div>
   );
