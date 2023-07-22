@@ -63,3 +63,10 @@ export const getSinglePost = async (slug) => {
     markdown: mdString,
   };
 };
+
+// Topページ用記事の取得
+export const getPostsForTopPage = async (pageSize: number) => {
+  const allPosts = await getAllPosts();
+  const fourPosts = await allPosts.slice(0, pageSize);
+  return fourPosts;
+};

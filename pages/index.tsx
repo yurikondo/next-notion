@@ -1,21 +1,21 @@
 import SinglePost from "@/components/Post/SinglePost";
-import { getAllPosts } from "@/lib/notionAPI";
+import { getPostsForTopPage } from "@/lib/notionAPI";
+import { GetStaticProps } from "next";
 import Head from "next/head";
 
 // SSG:ビルド時にあらかじめデータを取得しておく
-export const getStaticProps = async () => {
-  const allPosts = await getAllPosts();
+export const getStaticProps: GetStaticProps = async () => {
+  const fourPosts = await getPostsForTopPage(4);
   return {
     props: {
-      allPosts,
+      fourPosts,
     },
     // ISR:60秒ごとにデータを更新する
     revalidate: 60,
   };
 };
 
-export default function Home({ allPosts }) {
-  console.log(allPosts);
+export default function Home({ fourPosts }) {
   return (
     <div className="container h-full w-full mx-auto">
       <Head>
@@ -28,7 +28,7 @@ export default function Home({ allPosts }) {
         <h1 className="text-5xl font-medium text-center mb-16">
           NotionBlog 🚀
         </h1>
-        {allPosts.map((post) => {
+        {fourPosts.map((post) => {
           return (
             <div className="mx-4">
               <SinglePost
