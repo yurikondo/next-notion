@@ -1,8 +1,21 @@
 import SinglePost from "@/components/Post/SinglePost";
 import { getPostsForTopPage } from "@/lib/notionAPI";
-import { GetStaticProps } from "next";
+import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
-import Link from "next/link";
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: {
+      params: {
+        page: 1,
+      },
+      params: {
+        page: 2,
+      },
+    },
+    fallback: "blocking",
+  };
+};
 
 // SSG:ビルド時にあらかじめデータを取得しておく
 export const getStaticProps: GetStaticProps = async () => {
@@ -16,7 +29,7 @@ export const getStaticProps: GetStaticProps = async () => {
   };
 };
 
-export default function Home({ fourPosts }) {
+const BlogPageList = ({ fourPosts }) => {
   return (
     <div className="container h-full w-full mx-auto">
       <Head>
@@ -43,12 +56,8 @@ export default function Home({ fourPosts }) {
           );
         })}
       </main>
-      <Link
-        href="/"
-        className="mb-6  block mt-3 px-5 lg:w-1/2 text-sky-900 cursor-pointer text-right mx-auto"
-      >
-        ←ホームに戻る
-      </Link>
     </div>
   );
-}
+};
+
+export default BlogPageList;
