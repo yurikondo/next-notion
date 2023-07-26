@@ -1,37 +1,40 @@
 import SinglePost from "@/components/Post/SinglePost";
-import { getPostsForTopPage } from "@/lib/notionAPI";
+import { getNumberOfPages, getPostsByPage } from "@/lib/notionAPI";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
 
 export const getStaticPaths: GetStaticPaths = async () => {
+  const numberOfPage = await getNumberOfPages();
+
+  let params = [];
+  for (let i = 1; i <= numberOfPage; i++) {
+    params.push({ params: { page: i.toString() } });
+  }
   return {
-    paths: [
-      {
-        params: {
-          page: "1",
-        },
-        params: {
-          page: "2",
-        },
-      },
-    ],
+    paths: params,
     fallback: "blocking",
   };
 };
 
 // SSG:ビルド時にあらかじめデータを取得しておく
-export const getStaticProps: GetStaticProps = async () => {
-  const fourPosts = await getPostsForTopPage(4);
+export const getStaticProps: GetStaticProps = async (context) => {
+  // ?オプショナルチェーン：オプショナルチェーン ?. を使うと、左側がnullishの場合にもエラーにならず、undefinedが返るため、短い書き方でプロパティにアクセスすることができます。
+  const currentPage = context.params?.page;
+  // parseIntでStringをInt(10進数)に変換
+  const postsByPage = await getPostsByPage(
+    parseInt(currentPage.toString(), 10)
+  );
+
   return {
     props: {
-      fourPosts,
+      postsByPage,
     },
     // ISR:60秒ごとにデータを更新する
     revalidate: 60,
   };
 };
 
-const BlogPageList = ({ fourPosts }) => {
+const BlogPageList = ({ postsByPage }) => {
   return (
     <div className="container h-full w-full mx-auto">
       <Head>
@@ -45,7 +48,7 @@ const BlogPageList = ({ fourPosts }) => {
           NotionBlog 🚀
         </h1>
         <section className="sm:grid grid-cols-2 w-5/6 gap-3 mx-auto">
-          {fourPosts.map((post) => {
+          {postsByPage.map((post) => {
             return (
               <div>
                 <SinglePost
