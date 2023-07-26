@@ -12,7 +12,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return {
     paths: [
       {
-        params: { tag: "blog", page: "1" },
+        params: { tag: "Typescript", page: "1" },
       },
     ],
     fallback: "blocking",
@@ -24,9 +24,11 @@ export const getStaticProps: GetStaticProps = async (context) => {
   // ?オプショナルチェーン：オプショナルチェーン ?. を使うと、左側がnullishの場合にもエラーにならず、undefinedが返るため、短い書き方でプロパティにアクセスすることができます。
   const currentPage: string = context.params?.page.toString();
   const currentTag: string = context.params?.tag.toString();
+  const upperCasecurrentTag =
+    currentTag.charAt(0).toUpperCase() + currentTag.slice(1);
 
   const posts = await getPostsByTagAndPage(
-    currentTag,
+    upperCasecurrentTag,
     parseInt(currentPage, 10)
   );
 
