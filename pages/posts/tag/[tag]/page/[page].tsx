@@ -1,6 +1,10 @@
 import Pagination from "@/components/Pagination/Pagination";
 import SinglePost from "@/components/Post/SinglePost";
-import { getNumberOfPages, getPostsByPage } from "@/lib/notionAPI";
+import {
+  getNumberOfPages,
+  getPostsByPage,
+  getPostsByTagAndPage,
+} from "@/lib/notionAPI";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
 
@@ -8,7 +12,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return {
     paths: [
       {
-        params: { tag: "blog", id: "next.js" },
+        params: { tag: "blog", page: "1" },
       },
     ],
     fallback: "blocking",
@@ -18,25 +22,24 @@ export const getStaticPaths: GetStaticPaths = async () => {
 // SSG:ビルド時にあらかじめデータを取得しておく
 export const getStaticProps: GetStaticProps = async (context) => {
   // ?オプショナルチェーン：オプショナルチェーン ?. を使うと、左側がnullishの場合にもエラーにならず、undefinedが返るため、短い書き方でプロパティにアクセスすることができます。
-  const currentPage = context.params?.page;
-  // parseIntでStringをInt(10進数)に変換
-  const postsByPage = await getPostsByPage(
-    parseInt(currentPage.toString(), 10)
-  );
+  const currentPage: string = context.params?.page.toString();
+  const currentTag: string = context.params?.tag.toString();
 
-  const numberOfPage = await getNumberOfPages();
+  const posts = await getPostsByTagAndPage(
+    currentTag,
+    parseInt(currentPage, 10)
+  );
 
   return {
     props: {
-      postsByPage,
-      numberOfPage,
+      posts,
     },
     // ISR:60秒ごとにデータを更新する
     revalidate: 60,
   };
 };
 
-const BlogTagPageList = ({ postsByPage, numberOfPage }) => {
+const BlogTagPageList = ({ posts, numberOfPage }) => {
   return (
     <div className="container h-full w-full mx-auto">
       <Head>
@@ -50,7 +53,7 @@ const BlogTagPageList = ({ postsByPage, numberOfPage }) => {
           NotionBlog 🚀
         </h1>
         <section className="sm:grid grid-cols-2 w-5/6 gap-3 mx-auto">
-          {postsByPage.map((post) => {
+          {posts.map((post) => {
             return (
               <div key={post.id}>
                 <SinglePost
