@@ -1,3 +1,4 @@
+import Pagination from "@/components/Pagination/Pagination";
 import SinglePost from "@/components/Post/SinglePost";
 import { getNumberOfPages, getPostsByPage } from "@/lib/notionAPI";
 import { GetStaticPaths, GetStaticProps } from "next";
@@ -25,16 +26,19 @@ export const getStaticProps: GetStaticProps = async (context) => {
     parseInt(currentPage.toString(), 10)
   );
 
+  const numberOfPage = await getNumberOfPages();
+
   return {
     props: {
       postsByPage,
+      numberOfPage,
     },
     // ISR:60秒ごとにデータを更新する
     revalidate: 60,
   };
 };
 
-const BlogPageList = ({ postsByPage }) => {
+const BlogPageList = ({ postsByPage, numberOfPage }) => {
   return (
     <div className="container h-full w-full mx-auto">
       <Head>
@@ -50,7 +54,7 @@ const BlogPageList = ({ postsByPage }) => {
         <section className="sm:grid grid-cols-2 w-5/6 gap-3 mx-auto">
           {postsByPage.map((post) => {
             return (
-              <div>
+              <div key={post.slug}>
                 <SinglePost
                   title={post.title}
                   description={post.description}
@@ -63,6 +67,7 @@ const BlogPageList = ({ postsByPage }) => {
             );
           })}
         </section>
+        <Pagination numberOfPage={numberOfPage} />
       </main>
     </div>
   );
