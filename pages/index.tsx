@@ -29,9 +29,9 @@ export default function Home({ fourPosts }) {
         <h1 className="text-5xl font-medium text-center mb-16">
           NotionBlog 🚀
         </h1>
-        {fourPosts.map((post) => {
+        {fourPosts.map((post, index: number) => {
           return (
-            <div className="mx-4">
+            <div className="mx-4" key={index}>
               <SinglePost
                 title={post.title}
                 description={post.description}

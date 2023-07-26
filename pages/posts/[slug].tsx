@@ -34,8 +34,11 @@ const Post = ({ post }) => {
       <div className="border-b-2 w-1/3 mt-1 border-sky-900"></div>
       <span className="text-gray-500">{post.metadata.date}</span>
       <br />
-      {post.metadata.tags.map((tag: string) => (
-        <p className="text-white bg-sky-900 rounded-xl font-medium mt-2 px-2 inline-block mr-2">
+      {post.metadata.tags.map((tag: string, index: number) => (
+        <p
+          className="text-white bg-sky-900 rounded-xl font-medium mt-2 px-2 inline-block mr-2"
+          key={index}
+        >
           {tag}
         </p>
       ))}
@@ -63,7 +66,9 @@ const Post = ({ post }) => {
           }}
         ></ReactMarkdown>
         <Link href="/">
-          <span className="pb-20 block mt-3 text-sky-900 cursor-pointer">←ホームに戻る</span>
+          <span className="pb-20 block mt-3 text-sky-900 cursor-pointer">
+            ←ホームに戻る
+          </span>
         </Link>
       </div>
     </section>
